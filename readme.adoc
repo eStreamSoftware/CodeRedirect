@@ -1,0 +1,44 @@
+= CodeRedirect
+:source-highlighter: rouge
+
+`TCodeRedirect` is a class that allow to patch method defined Delphi classes or procedures.
+
+It provide runtime patch without modifying the original source code or redistibuted libraries (`.bpl`, `.dcu`).
+
+The class shall works in both `Win32` and `Win64` platform only.
+
+
+= Example
+
+[source,pascal]
+
+The example attempt to patch `CurrentYear` method in unit `System.SystUtils.pas`.
+
+----
+uses
+  System.SysUtils,
+  CodeRedirect;
+
+function CurrentYear_Patch: Word;
+begin
+  Result := 1999;
+end;
+
+begin
+  WriteLn('Before patch: ', CurrentYear);
+
+  var o := TCodeRedirect.CreateWithMethod(@CurrentYear, @CurrentYear_Patch);
+  WriteLn('After patch: ', CurrentYear);
+  o.Free;
+
+  WriteLn('Remove patch: ', CurrentYear);
+end.
+----
+
+Output Result
+[source]
+----
+Before patch: 2021
+After patch: 1999
+Remove patch: 2021
+----
